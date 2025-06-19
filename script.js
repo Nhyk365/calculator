@@ -20,12 +20,7 @@ function divide(x, y) {
   return parseInt(x) / parseInt(y);
 }
 
-//VARIABLES
-let numOne;
-let numTwo;
-let operator;
-
-//CALC. FUNCTIONS
+//CALC. FUNCTION
 function operate(num1, num2, operator) {
   if (operator == "+") {
     add(num1, num2);
@@ -37,3 +32,42 @@ function operate(num1, num2, operator) {
     divide(num1, num2);
   } else return null;
 }
+
+//DOC VARIABLES
+const screen = document.getElementById("screen");
+//buttons variables
+const deleteButton = document.getElementById("delete");
+const acButton = document.getElementById("ac");
+const divideButton = document.getElementById("divide");
+const multiplyButton = document.getElementById("multiply");
+const subtractButton = document.getElementById("subtract");
+const addButton = document.getElementById("add");
+const equalButton = document.getElementById("equal");
+//numbers variables
+const zeroButton = document.getElementById("zero");
+const oneButton = document.getElementById("one");
+const twoButton = document.getElementById("two");
+const threeButton = document.getElementById("three");
+const fourButton = document.getElementById("four");
+const fiveButton = document.getElementById("five");
+const sixButton = document.getElementById("six");
+const sevenButton = document.getElementById("seven");
+const eightButton = document.getElementById("eight");
+const nineButton = document.getElementById("nine");
+
+//func VARIABLES
+let numOne = 0;
+let numTwo;
+let operator;
+
+//show number on screen
+screen.textContent = numOne;
+//get fist number
+
+//EVENT Listeners
+const functionButtons = document.querySelectorAll(".function");
+functionButtons.forEach((button) =>
+  button.addEventListener("click", (x) => x + 1)
+);
+//num event listeners
+//this gets the button value +???Button.innerText
