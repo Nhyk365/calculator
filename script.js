@@ -71,3 +71,10 @@ functionButtons.forEach((button) =>
 );
 //num event listeners
 //this gets the button value +???Button.innerText
+
+//PHASE 1 Receive num and show it on screen
+//On button press store num1 in variable
+//show num on screen
+//on second button press if type == num add it to num1 as a string (2 -> 1 = 21 not 3)
+//show new num on screen
+//repeat for every new num

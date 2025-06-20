@@ -35,12 +35,16 @@ button {
   font-size: 50px;
 }
 
-.function {
+.function,
+#open-bracket,
+#close-bracket {
   background-color: #e5edff;
   border-radius: 10px;
   border-style: none;
 }
-.function:hover {
+.function:hover,
+#open-bracket:hover,
+#close-bracket:hover {
   background-color: #a3c9ff;
 }
 .number {
