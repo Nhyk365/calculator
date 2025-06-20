@@ -44,6 +44,7 @@ const subtractButton = document.getElementById("subtract");
 const addButton = document.getElementById("add");
 const equalButton = document.getElementById("equal");
 //numbers variables
+const pointButton = document.getElementById("point");
 const zeroButton = document.getElementById("zero");
 const oneButton = document.getElementById("one");
 const twoButton = document.getElementById("two");
@@ -54,21 +55,45 @@ const sixButton = document.getElementById("six");
 const sevenButton = document.getElementById("seven");
 const eightButton = document.getElementById("eight");
 const nineButton = document.getElementById("nine");
+const numButtons = document.querySelectorAll(".number");
+const mathButtons = document.querySelectorAll(".math");
 
 //func VARIABLES
-let numOne = 0;
-let numTwo;
+let firstNum = [];
+let secondNum = [];
 let operator;
+let currentButtonPress = "";
 
+//BUTTONS Functions
+//listens to button click and updates firstNum
+function numButtonPress(x) {
+  currentButtonPress = x.target.innerText;
+  firstNum.push(currentButtonPress);
+  updateScreen();
+}
+
+function mathButtonPress(x) {
+  const regex = /[+-]/g;
+  if (regex.test(x.target.innerText)) {
+    return (currentButtonPress = x.target.innerText);
+  }
+}
 //show number on screen
-screen.textContent = numOne;
+function updateScreen() {
+  const regex = /[%*+-.=]/g;
+  if (!regex.test(currentButtonPress)) {
+    screen.textContent = firstNum.join("");
+  }
+}
 //get fist number
 
 //EVENT Listeners
-const functionButtons = document.querySelectorAll(".function");
-functionButtons.forEach((button) =>
-  button.addEventListener("click", (x) => x + 1)
-);
+numButtons.forEach((element) => {
+  element.addEventListener("click", numButtonPress);
+});
+mathButtons.forEach((element) => {
+  element.addEventListener("click", mathButtonPress);
+});
 //num event listeners
 //this gets the button value +???Button.innerText
 
