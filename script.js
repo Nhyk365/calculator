@@ -1,91 +1,141 @@
 //MATH FUNCTIONS
 //add
 function add(x, y) {
-  console.log(parseInt(x) + parseInt(y));
-  return parseInt(x) + parseInt(y);
+  console.log(parseFloat(x) + parseFloat(y));
+  return parseFloat(x) + parseFloat(y);
 }
 //subtract
 function subtract(x, y) {
-  console.log(parseInt(x) - parseInt(y));
-  return parseInt(x) - parseInt(y);
+  console.log(parseFloat(x) - parseFloat(y));
+  return parseFloat(x) - parseFloat(y);
 }
 //multiplication
 function multiply(x, y) {
-  console.log(parseInt(x) * parseInt(y));
-  return parseInt(x) * parseInt(y);
+  console.log(parseFloat(x) * parseFloat(y));
+  return parseFloat(x) * parseFloat(y);
 }
 //division
 function divide(x, y) {
-  console.log(parseInt(x) / parseInt(y));
-  return parseInt(x) / parseInt(y);
+  console.log(parseFloat(x) / parseFloat(y));
+  return parseFloat(x) / parseFloat(y);
 }
 
 //CALC. FUNCTION
 function operate(num1, num2, operator) {
+  let result;
   if (operator == "+") {
-    add(num1, num2);
+    result = add(num1, num2);
   } else if (operator == "-") {
-    subtract(num1, num2);
+    result = subtract(num1, num2);
   } else if (operator == "*") {
-    multiply(num1, num2);
+    result = multiply(num1, num2);
   } else if (operator == "/") {
-    divide(num1, num2);
-  } else return null;
+    result = divide(num1, num2);
+  }
+  result = result.toFixed(6);
+  operation.firstNum = Array.from(String(result));
+  operation.secondNum = [];
+  operation.operator = "";
+  updateScreen();
 }
 
 //DOC VARIABLES
 const screen = document.getElementById("screen");
 //buttons variables
+const mathButtons = document.querySelectorAll(".math");
 const deleteButton = document.getElementById("delete");
 const acButton = document.getElementById("ac");
-const divideButton = document.getElementById("divide");
-const multiplyButton = document.getElementById("multiply");
-const subtractButton = document.getElementById("subtract");
-const addButton = document.getElementById("add");
 const equalButton = document.getElementById("equal");
 //numbers variables
 const pointButton = document.getElementById("point");
-const zeroButton = document.getElementById("zero");
-const oneButton = document.getElementById("one");
-const twoButton = document.getElementById("two");
-const threeButton = document.getElementById("three");
-const fourButton = document.getElementById("four");
-const fiveButton = document.getElementById("five");
-const sixButton = document.getElementById("six");
-const sevenButton = document.getElementById("seven");
-const eightButton = document.getElementById("eight");
-const nineButton = document.getElementById("nine");
 const numButtons = document.querySelectorAll(".number");
-const mathButtons = document.querySelectorAll(".math");
 
 //func VARIABLES
-let firstNum = [];
-let secondNum = [];
-let operator;
-let currentButtonPress = "";
+let operation = {
+  firstNum: [0],
+  secondNum: [],
+  operator: "",
+  currentButtonPress: "",
+};
 
 //BUTTONS Functions
-//listens to button click and updates firstNum
+//listens to button click and updates nums accordingly
 function numButtonPress(x) {
-  currentButtonPress = x.target.innerText;
-  firstNum.push(currentButtonPress);
+  operation.currentButtonPress = x.target.innerText;
+  /* regex is used to test if "." has already been used */
+  const regex = /[.]/g;
+  /* if no operator input add value to firstNum */
+  if (operation.operator == "") {
+    /* test if firstNum has a . */
+    if (regex.test(operation.firstNum) && operation.currentButtonPress == ".")
+      return;
+    if (operation.firstNum == 0 && operation.currentButtonPress != ".") {
+      operation.firstNum.splice(0, 1);
+    }
+    operation.firstNum.push(operation.currentButtonPress);
+    /* if operator is input add value to secondNum */
+  } else if (
+    /* test if secondNum has a . to not insert . multiple times*/
+    regex.test(operation.secondNum) &&
+    operation.currentButtonPress == "."
+  ) {
+    return;
+  } else operation.secondNum.push(operation.currentButtonPress);
+
   updateScreen();
 }
 
 function mathButtonPress(x) {
+  /* add operator input based on button pressed current button used for updateScreen() */
+  // if num 1 and num 2 populated button press launch operate()
+  if (operation.secondNum != "") {
+    operate(
+      operation.firstNum.join(""),
+      operation.secondNum.join(""),
+      operation.operator
+    );
+  }
+
   const regex = /[+-]/g;
   if (regex.test(x.target.innerText)) {
-    return (currentButtonPress = x.target.innerText);
+    operation.currentButtonPress = x.target.innerText;
+    operation.operator = x.target.innerText;
+  } else if (x.target.innerText == "÷") {
+    operation.currentButtonPress = "/";
+    operation.operator = "/";
+  } else if (x.target.innerText == "x") {
+    operation.currentButtonPress = "*";
+    operation.operator = "*";
   }
 }
+
+function acButtonPress() {
+  operation.firstNum = [0];
+  operation.secondNum = [];
+  operation.operator = "";
+  updateScreen();
+}
+
+function delButtonPress() {
+  if (operation.secondNum == "" && operation.firstNum != 0) {
+    operation.firstNum.pop();
+    if (operation.firstNum == "") operation.firstNum = [0];
+    updateScreen();
+  } else if (operation.secondNum != 0) {
+    operation.secondNum.pop();
+    if (operation.secondNum == "") operation.secondNum = [0];
+
+    updateScreen();
+  }
+}
+
 //show number on screen
 function updateScreen() {
-  const regex = /[%*+-.=]/g;
-  if (!regex.test(currentButtonPress)) {
-    screen.textContent = firstNum.join("");
-  }
+  const regex = /[/%*+-.=]/g;
+  if (!regex.test(operation.operator)) {
+    screen.textContent = operation.firstNum.join("");
+  } else screen.textContent = operation.secondNum.join("");
 }
-//get fist number
 
 //EVENT Listeners
 numButtons.forEach((element) => {
@@ -94,6 +144,8 @@ numButtons.forEach((element) => {
 mathButtons.forEach((element) => {
   element.addEventListener("click", mathButtonPress);
 });
+acButton.addEventListener("click", acButtonPress);
+deleteButton.addEventListener("click", delButtonPress);
 //num event listeners
 //this gets the button value +???Button.innerText
 
