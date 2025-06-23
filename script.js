@@ -16,6 +16,7 @@ function multiply(x, y) {
 }
 //division
 function divide(x, y) {
+  if (y == 0) return "ERROR";
   console.log(parseFloat(x) / parseFloat(y));
   return parseFloat(x) / parseFloat(y);
 }
@@ -32,11 +33,19 @@ function operate(num1, num2, operator) {
   } else if (operator == "/") {
     result = divide(num1, num2);
   }
-  result = result.toFixed(6);
-  operation.firstNum = Array.from(String(result));
-  operation.secondNum = [];
-  operation.operator = "";
-  updateScreen();
+  if (result == "ERROR") {
+    alert("Can't divide by 0!");
+    acButtonPress();
+  } else {
+    result = +result.toFixed(4);
+    if (result.toString().length > 12) {
+      result = result.toExponential(6);
+    }
+    operation.firstNum = Array.from(String(result));
+    operation.secondNum = [];
+    operation.operator = "";
+    updateScreen();
+  }
 }
 
 //DOC VARIABLES
@@ -61,6 +70,8 @@ let operation = {
 //BUTTONS Functions
 //listens to button click and updates nums accordingly
 function numButtonPress(x) {
+  /* resets the machine if last button was "=" */
+  if (operation.currentButtonPress == "=") operation.firstNum = [0];
   operation.currentButtonPress = x.target.innerText;
   /* regex is used to test if "." has already been used */
   const regex = /[.]/g;
@@ -69,7 +80,8 @@ function numButtonPress(x) {
     /* test if firstNum has a . */
     if (regex.test(operation.firstNum) && operation.currentButtonPress == ".")
       return;
-    if (operation.firstNum == 0 && operation.currentButtonPress != ".") {
+    /* sub 0 with the first number press */
+    if (operation.firstNum[0] === 0 && operation.currentButtonPress != ".") {
       operation.firstNum.splice(0, 1);
     }
     operation.firstNum.push(operation.currentButtonPress);
@@ -80,14 +92,29 @@ function numButtonPress(x) {
     operation.currentButtonPress == "."
   ) {
     return;
-  } else operation.secondNum.push(operation.currentButtonPress);
+  } else {
+    /* sub 0 with the first number press */
+    if (
+      operation.secondNum[0] === 0 &&
+      operation.currentButtonPress != "." &&
+      operation.secondNum[1] != "."
+    ) {
+      operation.secondNum.splice(0, 1);
+    } else if (
+      operation.secondNum == "" &&
+      operation.currentButtonPress == "."
+    ) {
+      operation.secondNum = [0];
+    }
+    operation.secondNum.push(operation.currentButtonPress);
+  }
 
   updateScreen();
 }
 
 function mathButtonPress(x) {
-  /* add operator input based on button pressed current button used for updateScreen() */
-  // if num 1 and num 2 populated button press launch operate()
+  /*   if num 1 and num 2 populated operate()
+  combined with second part gives result by pressing operator after num1 and 2 are populated*/
   if (operation.secondNum != "") {
     operate(
       operation.firstNum.join(""),
@@ -95,7 +122,7 @@ function mathButtonPress(x) {
       operation.operator
     );
   }
-
+  /* add operator input based on button pressed */
   const regex = /[+-]/g;
   if (regex.test(x.target.innerText)) {
     operation.currentButtonPress = x.target.innerText;
@@ -106,6 +133,9 @@ function mathButtonPress(x) {
   } else if (x.target.innerText == "x") {
     operation.currentButtonPress = "*";
     operation.operator = "*";
+  } else if (x.target.innerText == "=") {
+    /* used to reset the machine by pressing a number after a result */
+    operation.currentButtonPress = "=";
   }
 }
 
@@ -135,6 +165,8 @@ function updateScreen() {
   if (!regex.test(operation.operator)) {
     screen.textContent = operation.firstNum.join("");
   } else screen.textContent = operation.secondNum.join("");
+  /* if number is too big automatically scroll */
+  screen.scrollLeft = screen.scrollWidth;
 }
 
 //EVENT Listeners
