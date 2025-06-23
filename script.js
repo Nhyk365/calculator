@@ -1,23 +1,38 @@
+//DOC VARIABLES
+const screen = document.getElementById("screen");
+const calculator = document.getElementById("calculator");
+//buttons variables
+const mathButtons = document.querySelectorAll(".math");
+const deleteButton = document.getElementById("delete");
+const acButton = document.getElementById("ac");
+const equalButton = document.getElementById("equal");
+//numbers variables
+const pointButton = document.getElementById("point");
+const numButtons = document.querySelectorAll(".number");
+
+//func VARIABLES
+let operation = {
+  firstNum: [0],
+  secondNum: [],
+  operator: "",
+  currentButtonPress: "",
+};
 //MATH FUNCTIONS
 //add
 function add(x, y) {
-  console.log(parseFloat(x) + parseFloat(y));
   return parseFloat(x) + parseFloat(y);
 }
 //subtract
 function subtract(x, y) {
-  console.log(parseFloat(x) - parseFloat(y));
   return parseFloat(x) - parseFloat(y);
 }
 //multiplication
 function multiply(x, y) {
-  console.log(parseFloat(x) * parseFloat(y));
   return parseFloat(x) * parseFloat(y);
 }
 //division
 function divide(x, y) {
   if (y == 0) return "ERROR";
-  console.log(parseFloat(x) / parseFloat(y));
   return parseFloat(x) / parseFloat(y);
 }
 
@@ -37,6 +52,7 @@ function operate(num1, num2, operator) {
     alert("Can't divide by 0!");
     acButtonPress();
   } else {
+    /* if result is too big we use scientific notation and round decimals */
     result = +result.toFixed(4);
     if (result.toString().length > 12) {
       result = result.toExponential(6);
@@ -48,31 +64,21 @@ function operate(num1, num2, operator) {
   }
 }
 
-//DOC VARIABLES
-const screen = document.getElementById("screen");
-//buttons variables
-const mathButtons = document.querySelectorAll(".math");
-const deleteButton = document.getElementById("delete");
-const acButton = document.getElementById("ac");
-const equalButton = document.getElementById("equal");
-//numbers variables
-const pointButton = document.getElementById("point");
-const numButtons = document.querySelectorAll(".number");
-
-//func VARIABLES
-let operation = {
-  firstNum: [0],
-  secondNum: [],
-  operator: "",
-  currentButtonPress: "",
-};
-
 //BUTTONS Functions
 //listens to button click and updates nums accordingly
 function numButtonPress(x) {
-  /* resets the machine if last button was "=" */
-  if (operation.currentButtonPress == "=") operation.firstNum = [0];
-  operation.currentButtonPress = x.target.innerText;
+  /* check if value comes from keyboard or button */
+  if (x.type == "keydown") {
+    const keybRegex = /[1234567890.]/g;
+    if (keybRegex.test(x.key)) {
+      /* resets the machine if last button was "=" */
+      if (operation.currentButtonPress == "=") operation.firstNum = [0];
+
+      operation.currentButtonPress = x.key;
+    }
+  } else return;
+  if (x.type == "click") operation.currentButtonPress = x.target.innerText;
+
   /* regex is used to test if "." has already been used */
   const regex = /[.]/g;
   /* if no operator input add value to firstNum */
@@ -161,7 +167,7 @@ function delButtonPress() {
 
 //show number on screen
 function updateScreen() {
-  const regex = /[/%*+-.=]/g;
+  const regex = /[/*+-.=]/g;
   if (!regex.test(operation.operator)) {
     screen.textContent = operation.firstNum.join("");
   } else screen.textContent = operation.secondNum.join("");
@@ -178,12 +184,14 @@ mathButtons.forEach((element) => {
 });
 acButton.addEventListener("click", acButtonPress);
 deleteButton.addEventListener("click", delButtonPress);
-//num event listeners
-//this gets the button value +???Button.innerText
 
-//PHASE 1 Receive num and show it on screen
-//On button press store num1 in variable
-//show num on screen
-//on second button press if type == num add it to num1 as a string (2 -> 1 = 21 not 3)
-//show new num on screen
-//repeat for every new num
+//review this
+addEventListener("keydown", (event) => {
+  const keyRegex = /[/*+-=]/g;
+  const keyBRegex = /[1234567890.]/g;
+  if (keyRegex.test(event.key)) {
+    mathButtonPress(this);
+  } else if (keyBRegex.test(event.key)) {
+    numButtonPress(this);
+  }
+});
