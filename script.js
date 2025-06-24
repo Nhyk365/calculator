@@ -171,26 +171,30 @@ function acButtonPress(x) {
   operation.secondNum = [];
   operation.operator = "";
   x.target.blur();
+  mathButtonColor();
+
   updateScreen();
 }
 
 function delButtonPress(x) {
-  if (operation.secondNum == "" && operation.firstNum != 0) {
+  if (/[-/*+.=]/g.test(operation.currentButtonPress)) {
+    operation.operator = "";
+  } else if (operation.secondNum == "" && operation.firstNum != 0) {
     operation.firstNum.pop();
     if (operation.firstNum == "") operation.firstNum = [0];
-    updateScreen();
   } else if (operation.secondNum != 0) {
     operation.secondNum.pop();
     if (operation.secondNum == "") operation.secondNum = [0];
-    x.target.blur();
-    updateScreen();
   }
+  x.target.blur();
+  mathButtonColor();
+  updateScreen();
 }
 
 //show number on screen
 function updateScreen() {
   const regex = /[-/*+.=]/g;
-  if (!regex.test(operation.operator)) {
+  if (!regex.test(operation.operator) || operation.secondNum == "") {
     screen.textContent = operation.firstNum.join("");
   } else screen.textContent = operation.secondNum.join("");
   /* if number is too big automatically scroll */
