@@ -6,6 +6,10 @@ const mathButtons = document.querySelectorAll(".math");
 const deleteButton = document.getElementById("delete");
 const acButton = document.getElementById("ac");
 const equalButton = document.getElementById("equal");
+const addButton = document.getElementById("add");
+const minusButton = document.getElementById("subtract");
+const multiplyButton = document.getElementById("multiply");
+const divideButton = document.getElementById("divide");
 //numbers variables
 const pointButton = document.getElementById("point");
 const numButtons = document.querySelectorAll(".number");
@@ -61,6 +65,7 @@ function operate(num1, num2, operator) {
     operation.secondNum = [];
     operation.operator = "";
     updateScreen();
+    mathButtonColor();
   }
 }
 
@@ -69,15 +74,14 @@ function operate(num1, num2, operator) {
 function numButtonPress(x) {
   /* check if value comes from keyboard or button */
   if (x.type == "keydown") {
-    const keybRegex = /[1234567890.]/g;
-    if (keybRegex.test(x.key)) {
-      /* resets the machine if last button was "=" */
-      if (operation.currentButtonPress == "=") operation.firstNum = [0];
-
-      operation.currentButtonPress = x.key;
-    }
-  } else return;
-  if (x.type == "click") operation.currentButtonPress = x.target.innerText;
+    /* resets the machine if last button was "=" */
+    if (operation.currentButtonPress == "=") operation.firstNum = [0];
+    operation.currentButtonPress = x.key;
+  } else if (x.type == "click") {
+    /* resets the machine if last button was "=" */
+    if (operation.currentButtonPress == "=") operation.firstNum = [0];
+    operation.currentButtonPress = x.target.innerText;
+  }
 
   /* regex is used to test if "." has already been used */
   const regex = /[.]/g;
@@ -87,7 +91,11 @@ function numButtonPress(x) {
     if (regex.test(operation.firstNum) && operation.currentButtonPress == ".")
       return;
     /* sub 0 with the first number press */
-    if (operation.firstNum[0] === 0 && operation.currentButtonPress != ".") {
+    if (
+      operation.firstNum[0] === 0 &&
+      operation.currentButtonPress != "." &&
+      operation.firstNum[1] != "."
+    ) {
       operation.firstNum.splice(0, 1);
     }
     operation.firstNum.push(operation.currentButtonPress);
@@ -130,19 +138,31 @@ function mathButtonPress(x) {
   }
   /* add operator input based on button pressed */
   const regex = /[+-]/g;
-  if (regex.test(x.target.innerText)) {
-    operation.currentButtonPress = x.target.innerText;
-    operation.operator = x.target.innerText;
-  } else if (x.target.innerText == "÷") {
-    operation.currentButtonPress = "/";
-    operation.operator = "/";
-  } else if (x.target.innerText == "x") {
-    operation.currentButtonPress = "*";
-    operation.operator = "*";
-  } else if (x.target.innerText == "=") {
-    /* used to reset the machine by pressing a number after a result */
-    operation.currentButtonPress = "=";
+  /* check if button or keyboard is used */
+  if (x.type == "click") {
+    if (regex.test(x.target.innerText)) {
+      operation.currentButtonPress = x.target.innerText;
+      operation.operator = x.target.innerText;
+    } else if (x.target.innerText == "÷") {
+      operation.currentButtonPress = "/";
+      operation.operator = "/";
+    } else if (x.target.innerText == "x") {
+      operation.currentButtonPress = "*";
+      operation.operator = "*";
+    } else if (x.target.innerText == "=") {
+      /* used to reset the machine by pressing a number after a result */
+      operation.currentButtonPress = "=";
+    }
+  } else if (x.type == "keydown") {
+    /* Can use Enter has = button */
+    if (x.key == "Enter") {
+      operation.currentButtonPress = "=";
+    } else {
+      operation.currentButtonPress = x.key;
+      if (x.key != "=") operation.operator = x.key;
+    }
   }
+  mathButtonColor();
 }
 
 function acButtonPress() {
@@ -167,7 +187,7 @@ function delButtonPress() {
 
 //show number on screen
 function updateScreen() {
-  const regex = /[/*+-.=]/g;
+  const regex = /[-/*+.=]/g;
   if (!regex.test(operation.operator)) {
     screen.textContent = operation.firstNum.join("");
   } else screen.textContent = operation.secondNum.join("");
@@ -175,6 +195,23 @@ function updateScreen() {
   screen.scrollLeft = screen.scrollWidth;
 }
 
+//color current operator button
+function mathButtonColor() {
+  if (operation.operator == "+") {
+    addButton.style.backgroundColor = "#FFD9A3";
+  } else if (operation.operator == "-") {
+    minusButton.style.backgroundColor = "#FFD9A3";
+  } else if (operation.operator == "*") {
+    multiplyButton.style.backgroundColor = "#FFD9A3";
+  } else if (operation.operator == "/") {
+    divideButton.style.backgroundColor = "#FFD9A3";
+  } else if (operation.operator == "") {
+    addButton.style.backgroundColor = "";
+    minusButton.style.backgroundColor = "";
+    multiplyButton.style.backgroundColor = "";
+    divideButton.style.backgroundColor = "";
+  }
+}
 //EVENT Listeners
 numButtons.forEach((element) => {
   element.addEventListener("click", numButtonPress);
@@ -186,12 +223,12 @@ acButton.addEventListener("click", acButtonPress);
 deleteButton.addEventListener("click", delButtonPress);
 
 //review this
-addEventListener("keydown", (event) => {
-  const keyRegex = /[/*+-=]/g;
-  const keyBRegex = /[1234567890.]/g;
-  if (keyRegex.test(event.key)) {
-    mathButtonPress(this);
-  } else if (keyBRegex.test(event.key)) {
-    numButtonPress(this);
-  }
+/* addEventListener("keydown", numButtonPress);
+ */
+document.addEventListener("keydown", (event) => {
+  console.log(event.key);
+  if (/[1234567890\.]/g.test(event.key) && !/F/g.test(event.key))
+    numButtonPress(event);
+  if (/[-+=*\/]/.test(event.key) || event.key == "Enter")
+    mathButtonPress(event);
 });
