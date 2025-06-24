@@ -122,7 +122,7 @@ function numButtonPress(x) {
     }
     operation.secondNum.push(operation.currentButtonPress);
   }
-
+  x.target.blur();
   updateScreen();
 }
 
@@ -163,16 +163,18 @@ function mathButtonPress(x) {
     }
   }
   mathButtonColor();
+  x.target.blur();
 }
 
-function acButtonPress() {
+function acButtonPress(x) {
   operation.firstNum = [0];
   operation.secondNum = [];
   operation.operator = "";
+  x.target.blur();
   updateScreen();
 }
 
-function delButtonPress() {
+function delButtonPress(x) {
   if (operation.secondNum == "" && operation.firstNum != 0) {
     operation.firstNum.pop();
     if (operation.firstNum == "") operation.firstNum = [0];
@@ -180,7 +182,7 @@ function delButtonPress() {
   } else if (operation.secondNum != 0) {
     operation.secondNum.pop();
     if (operation.secondNum == "") operation.secondNum = [0];
-
+    x.target.blur();
     updateScreen();
   }
 }
@@ -223,8 +225,7 @@ acButton.addEventListener("click", acButtonPress);
 deleteButton.addEventListener("click", delButtonPress);
 
 //review this
-/* addEventListener("keydown", numButtonPress);
- */
+/* addEventListener("keydown", numButtonPress);*/
 document.addEventListener("keydown", (event) => {
   console.log(event.key);
   if (/[1234567890\.]/g.test(event.key) && !/F/g.test(event.key))
